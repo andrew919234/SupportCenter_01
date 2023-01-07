@@ -27,9 +27,9 @@ public abstract class MyDataBase extends RoomDatabase {
 
     public static MyDataBase create(final Context context) {
         if (instance == null) {
-            Room.databaseBuilder(
-                    context.getApplicationContext(),
-                    MyDataBase.class, DB_NAME)
+            instance = Room.databaseBuilder(
+                            context.getApplicationContext(),
+                            MyDataBase.class, DB_NAME)
                     .fallbackToDestructiveMigration()
                     .addCallback(roomCallback)
                     .build();
@@ -40,7 +40,7 @@ public abstract class MyDataBase extends RoomDatabase {
     private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
-           new PopulateDbAsyncTask(instance).execute();
+            new PopulateDbAsyncTask(instance).execute();
             super.onCreate(db);
         }
     };
@@ -54,9 +54,9 @@ public abstract class MyDataBase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            dao.insertData(1,"Yui","yui123");
-            dao.insertData("Yui","yui123");
-            dao.insertData("Yui","yui123");
+            dao.insertData(1, "Yui", "yui123");
+            dao.insertData("Yui", "yui123");
+            dao.insertData("Yui", "yui123");
             return null;
         }
     }
