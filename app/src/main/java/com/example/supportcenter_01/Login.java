@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -25,7 +26,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class Login extends AppCompatActivity {
     private ActivityLoginBinding binding;
-    private MyViewModel viewModel;
     private FirebaseAuth auth;
     //viewmodel
     private MyViewModel myViewModel;
@@ -55,37 +55,41 @@ public class Login extends AppCompatActivity {
         binding.btLoginSign.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signin_mail_passwd();
+                String emailaddress  = binding.etLoginEmailaddress.getText().toString().trim();
+                String password  =  binding.etLoginPassword.getText().toString().trim();
+//                signin_mail_passwd();
+                myViewModel.checkUser(emailaddress,password);
             }
         });
     }
 
-    private void signin_mail_passwd() {
-        if (!binding.etLoginEmailaddress.getText().toString().isEmpty() && !binding.etLoginPassword.getText().toString().isEmpty()) {
-            auth.signInWithEmailAndPassword(binding.etLoginEmailaddress.getText().toString(), binding.etLoginPassword.getText().toString())
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                FirebaseUser user = auth.getCurrentUser();
-                                binding.tvLoginInfo.setText(user.getEmail() + "登入成功");
-                                startActivity(new Intent(Login.this, Lobby.class));
-                            } else {
-                                binding.tvLoginInfo.setText("登入失敗：帳號或密碼錯誤");
-                            }
-                        }
-                    });
-        } else {
-            binding.tvLoginInfo.setText("帳號或密碼不可空白");
-        }
-    }
+//    private void signin_mail_passwd() {
+//        if (!binding.etLoginEmailaddress.getText().toString().isEmpty() && !binding.etLoginPassword.getText().toString().isEmpty()) {
+//           String emailaddress  = binding.etLoginEmailaddress.getText().toString().trim();
+//           String password  =  binding.etLoginPassword.getText().toString().trim();
+//            auth.signInWithEmailAndPassword(emailaddress,password)
+//                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<AuthResult> task) {
+//                            if (task.isSuccessful()) {
+//                                FirebaseUser f_user = auth.getCurrentUser();
+//                                binding.tvLoginInfo.setText(f_user.getEmail() + "登入成功");
+//                                myViewModel.insert(emailaddress,password);
+//                                startActivity(new Intent(Login.this, Lobby.class));
+//                            } else {
+//                                binding.tvLoginInfo.setText("登入失敗：帳號或密碼錯誤");
+//                            }
+//                        }
+//                    });
+//        } else {
+//            binding.tvLoginInfo.setText("帳號或密碼不可空白");
+//        }
+//    }
 
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser != null) {
+        if (myViewModel.checkUserOnline()) {
             startActivity(new Intent(Login.this, Lobby.class));
         }
     }
@@ -127,6 +131,6 @@ public class Login extends AppCompatActivity {
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         );
         // Hide both the status bar and the navigation bar
-        //windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
+//        windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
     }
 }
