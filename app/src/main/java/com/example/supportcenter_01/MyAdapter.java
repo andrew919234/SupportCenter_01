@@ -16,12 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.LinkedList;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-    int[] optionIcon = {R.drawable.baseline_work_outline_black_48,
-    R.drawable.baseline_flight_takeoff_black_48,
-    R.drawable.baseline_calendar_month_black_48,
-    R.drawable.baseline_date_range_black_48,
-    R.drawable.baseline_work_black_48,
-    R.drawable.baseline_fact_check_black_48};
+    int[] optionIcon ;
     String[] optionString;
 
     public MyAdapter(int[] optionIcon, String[] optionString) {
@@ -66,10 +61,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-//        View itemview = inflater.inflate(R.layout.item, parent, false);
-//        MyViewHolder vh = new MyViewHolder(itemview);
-        MyViewHolder vh = new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.option_item, parent, false));
+        MyViewHolder vh = new MyViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.option_item, parent, false));
         return vh;
     }
 

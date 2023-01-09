@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.ui.AppBarConfiguration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -50,16 +51,17 @@ public class Lobby extends AppCompatActivity {
             }
         });
         Resources res = getResources();
-        int[] icon = {R.drawable.baseline_work_outline_black_48,
-                R.drawable.baseline_flight_takeoff_black_48,
-                R.drawable.baseline_calendar_month_black_48,
-                R.drawable.baseline_date_range_black_48,
-                R.drawable.baseline_work_black_48,
-                R.drawable.baseline_fact_check_black_48};
+        int[] icon = {R.drawable.baseline_work_outline_24,
+                R.drawable.baseline_flight_takeoff_24,
+                R.drawable.baseline_calendar_month_24,
+                R.drawable.baseline_date_range_24,
+                R.drawable.baseline_work_24,
+                R.drawable.baseline_fact_check_24};
         String[] strings = res.getStringArray(R.array.option_string);
         LinearLayoutManager llm =  new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.HORIZONTAL);
         binding.lobbyRvbt.setLayoutManager(llm);
+//        binding.lobbyRvbt.setLayoutManager(new GridLayoutManager(this,3));
         MyAdapter adapterF = new MyAdapter(icon, strings);
         binding.lobbyRvbt.setAdapter(adapterF);
     }
