@@ -50,6 +50,7 @@
         android:background="@drawable/lobby_itembk"
         android:elevation="@dimen/cardview_default_elevation"
         android:orientation="vertical"
+        android:padding="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -60,7 +61,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:layout_margin="10dp"
             android:format12Hour="yyyy年MM月dd日 (EEEE) hh點mm分"
             android:textSize="20sp" />
 
@@ -69,28 +69,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:layout_margin="10dp"
             android:format12Hour="hh:mm:ss"
             android:textSize="50sp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
             android:text="工作時間：" />
 
         <TextView
             android:id="@+id/lobby_tv_worktime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
             android:text="上班時間 9:00 下班時間 6:00" />
 
         <Button
             android:id="@+id/lobby_clockInOut"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
             android:backgroundTint="#f77"
             android:text="打卡"
             android:textAllCaps="false" />
@@ -100,19 +96,21 @@
         android:id="@+id/lobby_post"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/lobby_rvbt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        tools:listitem="@layout/post_item" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/lobby_rvbt"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        tools:listitem="@layout/option_item"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lobby_post" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
