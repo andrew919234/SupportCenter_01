@@ -61,8 +61,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:layout_margin="10dp"
-            android:format12Hour="yyyy年MM月dd日 (EEEE)
-            hh點mm分"
+            android:format12Hour="yyyy年MM月dd日 (EEEE) hh點mm分"
             android:textSize="20sp" />
 
         <TextClock

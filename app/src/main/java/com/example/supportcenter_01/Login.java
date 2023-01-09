@@ -59,13 +59,13 @@ public class Login extends AppCompatActivity {
                 String password = binding.etLoginPassword.getText().toString().trim();
 //                signin_mail_passwd();
                 if (TextUtils.isEmpty(emailaddress) && TextUtils.isEmpty(password)) {
-                    binding.emailLayout.setError(getString(R.string.login_email_hint));
-                    binding.passwordLayout.setError(getString(R.string.login_password_hint));
+                    binding.emailLayout.setError("請輸入電子信箱");
+                    binding.passwordLayout.setError("請輸入密碼");
                 } else if (TextUtils.isEmpty(emailaddress)) {
-                    binding.emailLayout.setError(getString(R.string.login_email_hint));
+                    binding.emailLayout.setError("請輸入電子信箱");
                     return;
                 } else if (TextUtils.isEmpty(password)) {
-                    binding.passwordLayout.setError(getString(R.string.login_password_hint));
+                    binding.passwordLayout.setError("請輸入密碼");
                     return;
                 } else {
                     switch (myViewModel.checkUser(emailaddress, password)) {

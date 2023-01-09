@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.ui.AppBarConfiguration;
 
@@ -31,10 +32,11 @@ public class Lobby extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
-        myViewModel = ViewModelProviders.of(this).get(MyViewModel.class);
+        myViewModel =  new ViewModelProvider(this).get(MyViewModel.class);
         myViewModel.getAllUsers().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
+                Toast.makeText(Lobby.this, "onChange", Toast.LENGTH_SHORT).show();
             }
         });
         binding.fab.setOnClickListener(new View.OnClickListener() {
