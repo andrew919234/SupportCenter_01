@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
@@ -26,7 +27,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class Login extends AppCompatActivity {
     private ActivityLoginBinding binding;
-    private FirebaseAuth auth;
     //viewmodel
     private MyViewModel myViewModel;
 
@@ -37,7 +37,7 @@ public class Login extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         //viewmodel
-        myViewModel = ViewModelProviders.of(this).get(MyViewModel.class);
+        myViewModel = new ViewModelProvider(this).get(MyViewModel.class);
         myViewModel.getAllUsers().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
@@ -46,7 +46,7 @@ public class Login extends AppCompatActivity {
             }
         });
 //
-        auth = FirebaseAuth.getInstance();
+//        auth = FirebaseAuth.getInstance();
         setOnClick();
         hide();
     }
@@ -55,10 +55,32 @@ public class Login extends AppCompatActivity {
         binding.btLoginSign.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String emailaddress  = binding.etLoginEmailaddress.getText().toString().trim();
-                String password  =  binding.etLoginPassword.getText().toString().trim();
+                String emailaddress = binding.etLoginEmailaddress.getText().toString().trim();
+                String password = binding.etLoginPassword.getText().toString().trim();
 //                signin_mail_passwd();
-                myViewModel.checkUser(emailaddress,password);
+                if (TextUtils.isEmpty(emailaddress) && TextUtils.isEmpty(password)) {
+                    binding.emailLayout.setError(getString(R.string.login_email_hint));
+                    binding.passwordLayout.setError(getString(R.string.login_password_hint));
+                } else if (TextUtils.isEmpty(emailaddress)) {
+                    binding.emailLayout.setError(getString(R.string.login_email_hint));
+                    return;
+                } else if (TextUtils.isEmpty(password)) {
+                    binding.passwordLayout.setError(getString(R.string.login_password_hint));
+                    return;
+                } else {
+                    switch (myViewModel.checkUser(emailaddress, password)) {
+                        case -1:
+                            binding.tvLoginInfo.setText("登入失敗：帳號或密碼不可空白");
+                            break;
+                        case -2:
+                            binding.tvLoginInfo.setText("登入失敗：帳號或密碼錯誤");
+                            break;
+                        case 1:
+                            startActivity(new Intent(Login.this, Lobby.class));
+                            break;
+                    }
+
+                }
             }
         });
     }

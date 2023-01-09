@@ -20,7 +20,8 @@ import com.google.firebase.auth.FirebaseUser;
 public class MyViewModel extends AndroidViewModel {
     private UserRepository repository;
     private LiveData<User> allUser;
-    private FirebaseAuth auth;
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private int[] i = {-1};
 
 
     public MyViewModel(@NonNull Application application) {
@@ -30,23 +31,22 @@ public class MyViewModel extends AndroidViewModel {
     }
 
     //login 檢查使用者
-    public boolean checkUser(String emailaddress, String password) {
-//        if (!emailaddress.isEmpty() && !password.isEmpty()) {
-//            auth.signInWithEmailAndPassword(emailaddress, password)
-//                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<AuthResult> task) {
-//                            if (task.isSuccessful()) {
+    public int checkUser(String emailaddress, String password) {
+        auth = FirebaseAuth.getInstance();
+        auth.signInWithEmailAndPassword(emailaddress, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
 //                                FirebaseUser f_user = auth.getCurrentUser();
-//                                insert(emailaddress, password);
-//                            } else {
-//                            }
-//                        }
-//                    });
-//        } else {
-//            return false;
-//        }
-        return false;
+                            insert(emailaddress, password);//本地資料庫使用
+                            i[0] = 1;
+                        } else
+                            i[0] = -2;
+
+                    }
+                });
+        return i[0];
     }
 
     //login 檢查使用者是否在線上
@@ -59,10 +59,22 @@ public class MyViewModel extends AndroidViewModel {
         return false;
     }
 
+    public void signOutUserOnline() {
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser != null) {
+            FirebaseAuth.getInstance().signOut();
+        }
+    }
+
     //資料庫 存取User
     public void insert(String emailaddress, String password) {
         User user = new User(emailaddress, password);
         repository.insert(user);
+    }
+
+    public void getUserEmail() {
+//        dao.findDataByName(email);
     }
 
     public void update(User user) {
