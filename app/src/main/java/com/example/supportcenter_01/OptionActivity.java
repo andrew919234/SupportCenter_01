@@ -15,6 +15,5 @@ public class OptionActivity extends AppCompatActivity {
         binding = ActivityOptionBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
     }
 }

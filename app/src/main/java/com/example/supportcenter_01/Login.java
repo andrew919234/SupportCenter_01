@@ -14,6 +14,8 @@ import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -40,7 +42,7 @@ public class Login extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setOnClick();
-        hide();
+//        hide();
     }
 
     private void setOnClick() {
@@ -102,6 +104,21 @@ public class Login extends AppCompatActivity {
 
     public void onResume() {
         super.onResume();
+        MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver(){
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                super.onReceive(context, intent);
+
+            }
+        };
+        if(haveInternet()){
+            binding.btLoginSign.setEnabled(true);
+            Toast.makeText(this, "網路連線中", Toast.LENGTH_SHORT).show();
+
+        }else {
+            binding.btLoginSign.setEnabled(false);
+            binding.tvLoginInfo.setText("網路未連線");
+        }
         restorePrefs();
     }
 
@@ -124,6 +141,22 @@ public class Login extends AppCompatActivity {
 
     }
 
+    //網路連線檢查
+    private boolean haveInternet() {
+        boolean result = false;
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = connManager.getActiveNetworkInfo();
+        if (info == null || !info.isConnected()) {
+            result = false;
+        } else {
+            if (!info.isAvailable()) {
+                result = false;
+            } else {
+                result = true;
+            }
+        }
+        return result;
+    }
     private void hide() {
         ActionBar bar = getSupportActionBar();
         bar.hide();

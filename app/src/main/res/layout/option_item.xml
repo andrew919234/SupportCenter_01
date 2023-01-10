@@ -11,7 +11,7 @@
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:backgroundTint="#eee"
-        android:drawableTop="@mipmap/baseline_work_outline_black_48"
+        android:drawableTop="@drawable/baseline_work_outline_24"
         android:drawableTint="@color/green_500"
         android:includeFontPadding="false"
         android:text="休假"

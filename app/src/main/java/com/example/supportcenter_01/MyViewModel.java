@@ -1,8 +1,6 @@
 package com.example.supportcenter_01;
 
 import android.app.Application;
-import android.content.Intent;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
