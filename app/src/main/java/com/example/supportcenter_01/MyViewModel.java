@@ -39,7 +39,7 @@ public class MyViewModel extends AndroidViewModel {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 //                                FirebaseUser f_user = auth.getCurrentUser();
-                            insert(emailaddress, password);//本地資料庫使用
+//                            insert(emailaddress, password);//本地資料庫使用
                             i[0] = 1;
                         } else
                             i[0] = -2;

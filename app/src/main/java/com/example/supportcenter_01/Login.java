@@ -1,6 +1,7 @@
 package com.example.supportcenter_01;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
@@ -10,10 +11,12 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Toast;
 
@@ -36,17 +39,6 @@ public class Login extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        //viewmodel
-        myViewModel = new ViewModelProvider(this).get(MyViewModel.class);
-        myViewModel.getAllUsers().observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User user) {
-                //update RecyclerView
-                Toast.makeText(Login.this, "onchange", Toast.LENGTH_SHORT).show();
-            }
-        });
-//
-//        auth = FirebaseAuth.getInstance();
         setOnClick();
         hide();
     }
@@ -85,29 +77,21 @@ public class Login extends AppCompatActivity {
         });
     }
 
-//    private void signin_mail_passwd() {
-//        if (!binding.etLoginEmailaddress.getText().toString().isEmpty() && !binding.etLoginPassword.getText().toString().isEmpty()) {
-//           String emailaddress  = binding.etLoginEmailaddress.getText().toString().trim();
-//           String password  =  binding.etLoginPassword.getText().toString().trim();
-//            auth.signInWithEmailAndPassword(emailaddress,password)
-//                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<AuthResult> task) {
-//                            if (task.isSuccessful()) {
-//                                FirebaseUser f_user = auth.getCurrentUser();
-//                                binding.tvLoginInfo.setText(f_user.getEmail() + "登入成功");
-//                                myViewModel.insert(emailaddress,password);
-//                                startActivity(new Intent(Login.this, Lobby.class));
-//                            } else {
-//                                binding.tvLoginInfo.setText("登入失敗：帳號或密碼錯誤");
-//                            }
-//                        }
-//                    });
-//        } else {
-//            binding.tvLoginInfo.setText("帳號或密碼不可空白");
-//        }
-//    }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
+        //viewmodel
+        myViewModel = new ViewModelProvider(this).get(MyViewModel.class);
+        myViewModel.getAllUsers().observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                //update RecyclerView
+//                Toast.makeText(Login.this, "onchange", Toast.LENGTH_SHORT).show();
+            }
+        });
+        return super.onCreateView(name, context, attrs);
+    }
     @Override
     public void onStart() {
         super.onStart();

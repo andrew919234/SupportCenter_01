@@ -28,10 +28,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:layout_margin="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/lobby_greet"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/lobby_greet"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@android:drawable/ic_dialog_info" />
 
     <TextView
         android:id="@+id/lobby_greet"
@@ -61,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:format12Hour="yyyy年MM月dd日 (EEEE) hh點mm分"
+            android:format12Hour="yyyy年MM月dd日 (E) hh點mm分"
             android:textSize="20sp" />
 
         <TextClock
@@ -95,23 +96,20 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/lobby_post"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="200dp"
         android:layout_margin="5dp"
-        app:layout_constraintBottom_toTopOf="@+id/lobby_rvbt"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        tools:layout_editor_absoluteX="5dp"
         tools:listitem="@layout/post_item" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/lobby_rvbt"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="105dp"
         android:layout_margin="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         tools:listitem="@layout/option_item" />
 

@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.LinkedList;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-    int[] optionIcon ;
+    int[] optionIcon;
     String[] optionString;
 
     public MyAdapter(int[] optionIcon, String[] optionString) {
@@ -36,21 +36,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-//                    EditText e = itemView.getRootView().findViewById(R.id.editText);
-//                    e.setText(name.getText().toString());
-//                    Spinner spinnerG = itemView.getRootView().findViewById(R.id.spinner);
-//                    //依據要更新的ID，從strings.xml找到genre陣列，比對後選擇
-//                    String[] res = {"Sufi", "Rock", "Folk", "Pop"};
-//                    for (int i = 0; i < res.length; i++) {
-//                        if (genre.equals(res[i]))
-//                            spinnerG.setSelection(i);
-//                    }
-//                    Spinner spinnerId = itemView.getRootView().findViewById(R.id.spinner_up);
-//                    String[] IdArray = {Id.getText().toString().trim()};
-//                    ArrayAdapter adapter = new ArrayAdapter(itemView.getRootView().getContext(), android.R.layout.simple_spinner_item, IdArray);
-//                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//                    spinnerId.setAdapter(adapter);
+                    Button bt = itemView.findViewById(R.id.option_bt);
+                    bt.getText().toString();
 
                 }
             });

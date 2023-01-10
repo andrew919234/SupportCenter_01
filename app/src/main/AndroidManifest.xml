@@ -17,6 +17,13 @@
         android:theme="@style/Theme.SupportCenter_01"
         tools:targetApi="31">
         <activity
+            android:name=".OptionActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".Lobby"
             android:exported="true"
             android:label="@string/title_activity_lobby"
@@ -30,12 +37,12 @@
             android:name=".Login"
             android:exported="true"
             android:screenOrientation="portrait">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
