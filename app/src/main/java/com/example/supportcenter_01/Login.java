@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -94,6 +95,7 @@ public class Login extends AppCompatActivity {
         });
         return super.onCreateView(name, context, attrs);
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -104,21 +106,24 @@ public class Login extends AppCompatActivity {
 
     public void onResume() {
         super.onResume();
-        MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver(){
+        //監聽廣播(網路連線)
+        MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 super.onReceive(context, intent);
+                if (haveInternet()) {
+                    binding.btLoginSign.setEnabled(true);
+                    binding.tvLoginInfo.setText("");
+                    Toast.makeText(Login.this, "網路連線中", Toast.LENGTH_SHORT).show();
 
+                } else {
+                    binding.btLoginSign.setEnabled(false);
+                    binding.tvLoginInfo.setText("網路未連線");
+                }
             }
         };
-        if(haveInternet()){
-            binding.btLoginSign.setEnabled(true);
-            Toast.makeText(this, "網路連線中", Toast.LENGTH_SHORT).show();
-
-        }else {
-            binding.btLoginSign.setEnabled(false);
-            binding.tvLoginInfo.setText("網路未連線");
-        }
+        this.registerReceiver(myBroadcastReceiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         restorePrefs();
     }
 
@@ -138,25 +143,16 @@ public class Login extends AppCompatActivity {
         SharedPreferences settings = getSharedPreferences("PREF", 0);
         settings.edit().putString("PREF_EMAIL", binding.etLoginEmailaddress.getText().toString()).apply();
         settings.edit().putString("PREF_PASSWORD", binding.etLoginPassword.getText().toString()).apply();
-
     }
 
     //網路連線檢查
     private boolean haveInternet() {
-        boolean result = false;
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = connManager.getActiveNetworkInfo();
-        if (info == null || !info.isConnected()) {
-            result = false;
-        } else {
-            if (!info.isAvailable()) {
-                result = false;
-            } else {
-                result = true;
-            }
-        }
-        return result;
+        return info != null &&
+                info.isConnected();
     }
+
     private void hide() {
         ActionBar bar = getSupportActionBar();
         bar.hide();
