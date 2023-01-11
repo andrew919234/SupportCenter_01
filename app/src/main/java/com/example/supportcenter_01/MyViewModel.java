@@ -19,8 +19,15 @@ public class MyViewModel extends AndroidViewModel {
     private UserRepository repository;
     private LiveData<User> allUser;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
-    private int[] i = {-1};
+    private int i = -1;
 
+    public int getI() {
+        return i;
+    }
+
+    public void setI(int i) {
+        this.i = i;
+    }
 
     public MyViewModel(@NonNull Application application) {
         super(application);
@@ -36,16 +43,15 @@ public class MyViewModel extends AndroidViewModel {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-//                                FirebaseUser f_user = auth.getCurrentUser();
 //                            insert(emailaddress, password);//本地資料庫使用
-                            i[0] = 1;
+                            setI(1);
                         } else
-                            i[0] = -2;
-
+                            setI(-2);
                     }
                 });
-        return i[0];
+        return getI();
     }
+
 
     //login 檢查使用者是否在線上
     public boolean checkUserOnline() {

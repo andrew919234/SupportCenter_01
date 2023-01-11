@@ -14,6 +14,17 @@ public class User {
     public String email;
     @ColumnInfo(name = "password")
     public String password;
+    @ColumnInfo(name = "guinumber")
+    public int GUInumber;
+    @ColumnInfo(name = "name")
+    public String name;
+    @ColumnInfo(name = "sex")
+    public String sex;
+    @ColumnInfo(name = "birthday")
+    public int birthday;
+    @ColumnInfo(name = "onboardtime")
+    public int onBoardTime;
+
 
     public User() {
     }

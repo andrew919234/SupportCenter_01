@@ -1,5 +1,6 @@
 package com.example.supportcenter_01;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,8 +37,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Button bt = itemView.findViewById(R.id.option_bt);
-                    bt.getText().toString();
+
+//itemView.getRootView().getRootView().getContext()
 
                 }
             });

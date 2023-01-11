@@ -114,8 +114,6 @@ public class Login extends AppCompatActivity {
                 if (haveInternet()) {
                     binding.btLoginSign.setEnabled(true);
                     binding.tvLoginInfo.setText("");
-                    Toast.makeText(Login.this, "網路連線中", Toast.LENGTH_SHORT).show();
-
                 } else {
                     binding.btLoginSign.setEnabled(false);
                     binding.tvLoginInfo.setText("網路未連線");
