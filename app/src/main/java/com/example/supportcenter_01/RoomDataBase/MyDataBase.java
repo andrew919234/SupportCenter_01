@@ -12,7 +12,7 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.sqlite.db.SupportSQLiteOpenHelper;
 
-@Database(entities = {User.class}, version = 1)
+//@Database(entities = {User.class}, version = 1)
 public abstract class MyDataBase extends RoomDatabase {
 
     private static final String DB_NAME = "UserDatabase.db";
@@ -54,9 +54,9 @@ public abstract class MyDataBase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            dao.insertData(1, "Yui", "yui123");
-            dao.insertData("Yui", "yui123");
-            dao.insertData("Yui", "yui123");
+//            dao.insertData(1, "Yui", "yui123");
+//            dao.insertData("Yui", "yui123");
+//            dao.insertData("Yui", "yui123");
             return null;
         }
     }

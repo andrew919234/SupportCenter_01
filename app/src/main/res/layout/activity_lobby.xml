@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".Lobby">
 
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
@@ -13,15 +14,104 @@
         android:theme="@style/Theme.SupportCenter_01.AppBarOverlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.SupportCenter_01.PopupOverlay" />
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:popupTheme="@style/Theme.SupportCenter_01.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/lobby_greet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="早安！"
+                android:textSize="24sp" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:background="@drawable/lobby_itembk"
+                android:elevation="@dimen/cardview_default_elevation"
+                android:orientation="vertical"
+                android:padding="15dp">
+
+                <TextClock
+                    android:id="@+id/lobby_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:format12Hour="yyyy年MM月dd日 (EEEE) hh點mm分"
+                    android:textSize="20sp" />
+
+                <TextClock
+                    android:id="@+id/lobby_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:format12Hour="hh:mm:ss"
+                    android:textSize="50sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="工作時間：" />
+
+                <TextView
+                    android:id="@+id/lobby_tv_worktime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="上班時間 9:00 下班時間 6:00" />
+
+                <Button
+                    android:id="@+id/lobby_clockInOut"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#f77"
+                    android:text="打卡"
+                    android:textAllCaps="false" />
+
+                <TextView
+                    android:id="@+id/lobby_tv_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="位址" />
+            </LinearLayout>
+
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/lobby_post"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="5dp"-->
+<!--                tools:listitem="@layout/post_item">-->
+
+<!--            </androidx.recyclerview.widget.RecyclerView>-->
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/lobby_rvbt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                tools:listitem="@layout/option_item" />
+
+        </LinearLayout>
+    </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -29,96 +119,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/lobby_greet"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/lobby_greet"
+        app:layout_constraintBottom_toBottomOf="@+id/appBarLayout"
+        app:layout_constraintEnd_toEndOf="@+id/appBarLayout"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
         app:srcCompat="@android:drawable/ic_dialog_info" />
-
-    <TextView
-        android:id="@+id/lobby_greet"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="早安！"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:background="@drawable/lobby_itembk"
-        android:elevation="@dimen/cardview_default_elevation"
-        android:orientation="vertical"
-        android:padding="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lobby_greet">
-
-        <TextClock
-            android:id="@+id/lobby_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:format12Hour="yyyy年MM月dd日 (EEEE) hh點mm分"
-            android:textSize="20sp" />
-
-        <TextClock
-            android:id="@+id/lobby_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:format12Hour="hh:mm:ss"
-            android:textSize="50sp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="工作時間：" />
-
-        <TextView
-            android:id="@+id/lobby_tv_worktime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="上班時間 9:00 下班時間 6:00" />
-
-        <Button
-            android:id="@+id/lobby_clockInOut"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#f77"
-            android:text="打卡"
-            android:textAllCaps="false" />
-
-        <TextView
-            android:id="@+id/lobby_tv_location"
-            android:layout_width="match_parent"
-            android:gravity="end"
-            android:layout_height="wrap_content"
-            android:text="位址" />
-    </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/lobby_post"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_margin="5dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        tools:listitem="@layout/post_item" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/lobby_rvbt"
-        android:layout_width="match_parent"
-        android:layout_height="105dp"
-        android:layout_margin="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:listitem="@layout/option_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

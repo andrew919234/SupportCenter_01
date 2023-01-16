@@ -81,7 +81,7 @@
             android:layout_gravity="center"
             android:layout_margin="20dp"
             android:backgroundTint="#009688"
-            android:text="@string/login_sign_in" />
+            android:text="@string/login_login_in" />
 
     </LinearLayout>
 

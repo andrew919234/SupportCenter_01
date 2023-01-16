@@ -4,9 +4,11 @@
     android:layout_height="wrap_content"
     android:layout_margin="10dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/lobby_itembk"
         android:padding="5dp">
 
         <TextView
@@ -23,7 +25,6 @@
             android:id="@+id/post_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/post_title"
             android:text="02/25"
             android:layout_gravity="start"
             android:textColor="#0E6A0E"
@@ -33,10 +34,32 @@
             android:id="@+id/post_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/post_time"
             android:layout_marginTop="5dp"
-            android:text="公告內容公告內容公告內容公告內容公告內容公告內容公告內容公告內容公告內容公告內容公告內容"
             android:textSize="16sp" />
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/tv_sex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/tv_birthday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".OptionActivity">
+    tools:context=".LeaveActivity">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="20dp"
         android:text="休假申請"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -32,13 +32,13 @@
         android:layout_width="match_parent"
         android:layout_height="105dp"
         android:layout_margin="10dp"
-        tools:listitem="@layout/option_item"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        tools:listitem="@layout/option_item" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/con_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="20dp"
@@ -50,45 +50,84 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/option_rv">
 
+
         <TextView
-            android:id="@+id/lobby_date"
+            android:id="@+id/lobby_leave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
+            android:layout_marginBottom="10dp"
             android:text="休假假別"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/lobby_time"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_gravity="start"-->
+        <!--            android:text="時間"-->
+        <!--            android:textSize="18sp" />-->
+
 
         <TextView
-            android:id="@+id/lobby_time"
+            android:id="@+id/remainingAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:text="時間"
-            android:textSize="18sp" />
+            android:text="可用天數"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/lobby_leave"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-
-        <TextView
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/bt_choose_time"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="工作時間：" />
+            android:text="..."
+            app:layout_constraintBottom_toBottomOf="@+id/time_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/time_layout" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/time_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="休假時間"
+            app:errorEnabled="true"
+            app:layout_constraintEnd_toStartOf="@+id/bt_choose_time"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lobby_leave">
+
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:id="@+id/et_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10" />
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/reason_layout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/account_layout"
+            android:layout_height="0dp"
             android:hint="休假原因"
             app:counterEnabled="true"
             app:counterMaxLength="60"
-            app:errorEnabled="true">
+            app:errorEnabled="true"
+            app:layout_constraintBottom_toTopOf="@+id/lobby_clockInOut"
+            app:layout_constraintTop_toBottomOf="@+id/time_layout">
 
             <com.google.android.material.textfield.TextInputEditText
 
                 android:id="@+id/et_reason"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
+                android:layout_height="match_parent"
+                android:gravity="top"
                 android:maxLines="6" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -96,15 +135,9 @@
             android:id="@+id/lobby_clockInOut"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="#489AFF"
+            android:backgroundTint="@color/green_500"
             android:text="確認"
-            android:textAllCaps="false" />
-
-        <TextView
-            android:id="@+id/lobby_tv_location"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:text="位址" />
-    </LinearLayout>
+            android:textAllCaps="false"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

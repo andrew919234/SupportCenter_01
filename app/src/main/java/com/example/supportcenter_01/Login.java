@@ -1,15 +1,11 @@
 package com.example.supportcenter_01;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +15,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Toast;
 
@@ -29,12 +24,21 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class Login extends AppCompatActivity {
     private ActivityLoginBinding binding;
     //viewmodel
     private MyViewModel myViewModel;
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private DatabaseReference db_UserRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,9 @@ public class Login extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setOnClick();
+        db_UserRef = FirebaseDatabase.getInstance().getReference("users");
+        //viewmodel
+        myViewModel = new ViewModelProvider(this).get(MyViewModel.class);
 //        hide();
     }
 
@@ -52,7 +59,6 @@ public class Login extends AppCompatActivity {
             public void onClick(View v) {
                 String emailaddress = binding.etLoginEmailaddress.getText().toString().trim();
                 String password = binding.etLoginPassword.getText().toString().trim();
-//                signin_mail_passwd();
                 if (TextUtils.isEmpty(emailaddress) && TextUtils.isEmpty(password)) {
                     binding.emailLayout.setError("請輸入電子信箱");
                     binding.passwordLayout.setError("請輸入密碼");
@@ -63,46 +69,23 @@ public class Login extends AppCompatActivity {
                     binding.passwordLayout.setError("請輸入密碼");
                     return;
                 } else {
-                    switch (myViewModel.checkUser(emailaddress, password)) {
-                        case -1:
-                            binding.tvLoginInfo.setText("登入失敗：帳號或密碼不可空白");
-                            break;
-                        case -2:
-                            binding.tvLoginInfo.setText("登入失敗：帳號或密碼錯誤");
-                            break;
-                        case 1:
-                            startActivity(new Intent(Login.this, Lobby.class));
-                            break;
-                    }
-
+                    auth = FirebaseAuth.getInstance();
+                    auth.signInWithEmailAndPassword(emailaddress, password)
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        findUser();
+                                    } else {
+                                        binding.tvLoginInfo.setText("登入失敗：帳號或密碼錯誤");
+                                    }
+                                }
+                            });
                 }
             }
         });
     }
 
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
-        //viewmodel
-        myViewModel = new ViewModelProvider(this).get(MyViewModel.class);
-        myViewModel.getAllUsers().observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User user) {
-                //update RecyclerView
-//                Toast.makeText(Login.this, "onchange", Toast.LENGTH_SHORT).show();
-            }
-        });
-        return super.onCreateView(name, context, attrs);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (myViewModel.checkUserOnline()) {
-            startActivity(new Intent(Login.this, Lobby.class));
-        }
-    }
 
     public void onResume() {
         super.onResume();
@@ -134,6 +117,9 @@ public class Login extends AppCompatActivity {
             binding.etLoginPassword.setText(pref_password);
             binding.etLoginEmailaddress.requestFocus();
         }
+        if(myViewModel.checkUserOnline()){
+            startActivity(new Intent(Login.this,Lobby.class));
+        }
     }
 
     public void onPause() {
@@ -142,6 +128,43 @@ public class Login extends AppCompatActivity {
         settings.edit().putString("PREF_EMAIL", binding.etLoginEmailaddress.getText().toString()).apply();
         settings.edit().putString("PREF_PASSWORD", binding.etLoginPassword.getText().toString()).apply();
     }
+
+    private void findUser() {
+        String emailaddress = binding.etLoginEmailaddress.getText().toString().trim();
+        Query query = db_UserRef.orderByChild("email");//比對資料
+        query.addListenerForSingleValueEvent(new ValueEventListener() {//若有相同資料，會啟動query
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = new User();//區域變數
+                ArrayList<User> tmp_array = new ArrayList<>();
+                if (snapshot.exists()) {
+                    for (DataSnapshot ds : snapshot.getChildren()) {//取得底下資料
+                        user = ds.getValue(User.class);
+                        tmp_array.add(user);
+                    }
+                }
+                boolean dataUserAppear = false;
+                for (User e : tmp_array) {
+                    if (e.email.equals(emailaddress)) {
+                        Toast.makeText(Login.this, "登入成功", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(Login.this, Lobby.class));
+                        dataUserAppear = true;
+                    }
+                }
+                if (!dataUserAppear) {
+                    binding.tvLoginInfo.setText("登入失敗：請改用ManagerCenterApp登入");
+                    myViewModel.signOutUserOnline();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
 
     //網路連線檢查
     private boolean haveInternet() {

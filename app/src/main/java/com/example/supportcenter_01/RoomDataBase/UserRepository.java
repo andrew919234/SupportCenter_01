@@ -15,7 +15,7 @@ public class UserRepository {
     public UserRepository(Application application) {
         MyDataBase myDataBase = MyDataBase.getInstance(application);
         dao = myDataBase.DataDao();
-        allUsers = dao.displayAll();
+//        allUsers = dao.displayAll();
     }
 
     public void insert(User user) {
@@ -47,7 +47,7 @@ public class UserRepository {
 
         @Override
         protected Void doInBackground(User... users) {
-            dao.insertData(users[0]);
+//            dao.insertData(users[0]);
             return null;
         }
     }
@@ -61,7 +61,7 @@ public class UserRepository {
 
         @Override
         protected Void doInBackground(User... users) {
-            dao.updateData(users[0]);
+//            dao.updateData(users[0]);
             return null;
         }
     }
@@ -75,7 +75,7 @@ public class UserRepository {
 
         @Override
         protected Void doInBackground(User... users) {
-            dao.deleteAllData();
+//            dao.deleteAllData();
             return null;
         }
     }
@@ -89,7 +89,7 @@ public class UserRepository {
 
         @Override
         protected Void doInBackground(User... users) {
-            dao.deleteData(users[0]);
+//            dao.deleteData(users[0]);
             return null;
         }
     }

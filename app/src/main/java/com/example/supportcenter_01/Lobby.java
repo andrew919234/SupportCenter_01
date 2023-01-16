@@ -10,11 +10,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 
@@ -23,29 +20,22 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.AttributeSet;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.supportcenter_01.RoomDataBase.User;
 import com.example.supportcenter_01.databinding.ActivityLobbyBinding;
-import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import java.security.cert.PKIXRevocationChecker;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 public class Lobby extends AppCompatActivity {
 
@@ -54,20 +44,16 @@ public class Lobby extends AppCompatActivity {
     private MyViewModel myViewModel;
     private double loacalLatitude;
     private double loacalLongitude;
-//    private double latitude = 24.93101;
+    //    private double latitude = 24.93101;
 //    private double longitude = 121.17201;
     private double latitude = 24.92977;
     private double longitude = 121.17199;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityLobbyBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-
-        binding.lobbyTvLocation.setOnClickListener(v -> {
-            startActivity(new Intent(Lobby.this, OptionActivity.class));
-        });
 
         binding.lobbyClockInOut.setOnClickListener(v -> {
             if (haveInternet()) {
@@ -87,8 +73,22 @@ public class Lobby extends AppCompatActivity {
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(binding.getRoot().getContext());//初始化BottomSheet
+                view = LayoutInflater.from(Lobby.this).inflate(R.layout.bottom_sheet_logout, null);//連結的介面
+                Button btCancel = view.findViewById(R.id.button_cancel);
+                Button bt01 = view.findViewById(R.id.button_sheet_out);
+                bottomSheetDialog.setContentView(view);//將介面載入至BottomSheet内
+                ViewGroup parent = (ViewGroup) view.getParent();//取得BottomSheet介面設定
+                parent.setBackgroundResource(android.R.color.transparent);//將背景設為透明,否則預設白底
+                bt01.setOnClickListener((v) -> {
+                    bottomSheetDialog.dismiss();
                 myViewModel.signOutUserOnline();
-                finish();
+                    finish();
+                });
+                btCancel.setOnClickListener((v) -> {
+                    bottomSheetDialog.dismiss();
+                });
+                bottomSheetDialog.show();//顯示BottomSheet
             }
         });
         Resources res = getResources();
@@ -99,10 +99,10 @@ public class Lobby extends AppCompatActivity {
                 R.drawable.baseline_work_24,
                 R.drawable.baseline_fact_check_24};
         String[] strings = res.getStringArray(R.array.option_string);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.HORIZONTAL);
-        binding.lobbyRvbt.setLayoutManager(llm);
-//        binding.lobbyRvbt.setLayoutManager(new GridLayoutManager(this,3));
+//        LinearLayoutManager llm = new LinearLayoutManager(this);
+//        llm.setOrientation(LinearLayoutManager.HORIZONTAL);z
+//        binding.lobbyRvbt.setLayoutManager(llm);
+        binding.lobbyRvbt.setLayoutManager(new GridLayoutManager(this, 2));
         MyAdapter adapterF = new MyAdapter(icon, strings);
         binding.lobbyRvbt.setAdapter(adapterF);
     }
@@ -111,12 +111,6 @@ public class Lobby extends AppCompatActivity {
     @Override
     public View onCreateView(@NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
         myViewModel = new ViewModelProvider(this).get(MyViewModel.class);
-        myViewModel.getAllUsers().observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User user) {
-//                Toast.makeText(Lobby.this, "onChange", Toast.LENGTH_SHORT).show();
-            }
-        });
         return super.onCreateView(name, context, attrs);
     }
 
@@ -160,19 +154,18 @@ public class Lobby extends AppCompatActivity {
 
                     loacalLongitude = Double.parseDouble(String.format("%.5f", location.getLongitude()));
                     loacalLatitude = Double.parseDouble(String.format("%.5f", location.getLatitude()));
-                    @SuppressLint("DefaultLocale") String address = "我的位置：緯度:" +loacalLatitude +
-                            "經度:" +loacalLongitude;
-                    if(latitude==loacalLatitude&&longitude==loacalLongitude){
-                        binding.lobbyTvLocation.setText("打卡成功,1公里內"+address);
-                    }
-                    else{
+                    @SuppressLint("DefaultLocale") String address = "我的位置：緯度:" + loacalLatitude +
+                            "經度:" + loacalLongitude;
+                    if (latitude == loacalLatitude && longitude == loacalLongitude) {
+                        binding.lobbyTvLocation.setText("打卡成功,1公里內" + address);
+                    } else {
                         loacalLongitude = Double.parseDouble(String.format("%.4f", location.getLongitude()));
                         loacalLatitude = Double.parseDouble(String.format("%.4f", location.getLatitude()));
                         latitude = Double.parseDouble(String.format("%.4f", latitude));
-                        longitude= Double.parseDouble(String.format("%.4f", longitude));
-                        if (latitude==loacalLatitude&&longitude==loacalLongitude);
-                        binding.lobbyTvLocation.setText("10公尺以內"+address);
-                        binding.lobbyTvLocation.setText("差距10公尺以上"+address);
+                        longitude = Double.parseDouble(String.format("%.4f", longitude));
+                        if (latitude == loacalLatitude && longitude == loacalLongitude) ;
+                        binding.lobbyTvLocation.setText("10公尺以內" + address);
+                        binding.lobbyTvLocation.setText("差距10公尺以上" + address);
 
                     }
                 } else {

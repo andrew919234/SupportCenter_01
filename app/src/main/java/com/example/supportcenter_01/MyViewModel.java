@@ -31,8 +31,8 @@ public class MyViewModel extends AndroidViewModel {
 
     public MyViewModel(@NonNull Application application) {
         super(application);
-        repository = new UserRepository(application);
-        allUser = repository.getAllUsers();
+//        repository = new UserRepository(application);
+//        allUser = repository.getAllUsers();
     }
 
     //login 檢查使用者
@@ -72,10 +72,10 @@ public class MyViewModel extends AndroidViewModel {
     }
 
     //資料庫 存取User
-    public void insert(String emailaddress, String password) {
-        User user = new User(emailaddress, password);
-        repository.insert(user);
-    }
+//    public void insert(String emailaddress, String password) {
+//        User user = new User(emailaddress, password);
+//        repository.insert(user);
+//    }
 
     public void getUserEmail() {
 //        dao.findDataByName(email);
