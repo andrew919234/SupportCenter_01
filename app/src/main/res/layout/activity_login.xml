@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".Login">
 
-
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
@@ -42,8 +41,8 @@
                 android:id="@+id/et_login_emailaddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"
                 android:ems="10"
+                android:inputType="textEmailAddress"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 

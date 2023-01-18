@@ -39,6 +39,7 @@ public class Login extends AppCompatActivity {
     private MyViewModel myViewModel;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private DatabaseReference db_UserRef;
+    public static String UserEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +114,7 @@ public class Login extends AppCompatActivity {
         String pref_email = settings.getString("PREF_EMAIL", "");
         String pref_password = settings.getString("PREF_PASSWORD", "");
         if (!"".equals("PREF")) {
+            UserEmail = pref_email;
             binding.etLoginEmailaddress.setText(pref_email);
             binding.etLoginPassword.setText(pref_password);
             binding.etLoginEmailaddress.requestFocus();

@@ -44,10 +44,8 @@ public class Lobby extends AppCompatActivity {
     private MyViewModel myViewModel;
     private double loacalLatitude;
     private double loacalLongitude;
-    //    private double latitude = 24.93101;
-//    private double longitude = 121.17201;
-    private double latitude = 24.92977;
-    private double longitude = 121.17199;
+    private double latitude = 25.00536;
+    private double longitude = 121.54166;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

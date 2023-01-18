@@ -50,11 +50,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         String string = optionString[position];
         holder.optionButton.setCompoundDrawablesWithIntrinsicBounds(0, icon, 0, 0);
         holder.optionButton.setText(string);
-        if(string.equals("休假申請")){
-        holder.optionButton.setOnClickListener(v -> {
-            holder.itemView.getContext().startActivity(new Intent(holder.itemView.getContext(), LeaveActivity.class));
-        });
-
+        if (string.equals("休假申請")) {
+            holder.optionButton.setOnClickListener(v -> {
+                holder.itemView.getContext().startActivity(new Intent(holder.itemView.getContext(), LeaveActivity.class));
+            });
+        } else if (string.equals("劃假")) {
+            holder.optionButton.setOnClickListener(v -> {
+                holder.itemView.getContext().startActivity(new Intent(holder.itemView.getContext(), DayoffActivity.class));
+            });
         }
     }
 
