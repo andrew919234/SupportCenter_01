@@ -1,20 +1,48 @@
 package com.example.supportcenter_01.RoomDataBase;
 
-import static com.example.supportcenter_01.Login.UserEmail;
-
-import android.content.SharedPreferences;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LeaveApply {
 
     private String leave;
     private String userEmail;
+    private List<Integer> dayOfMouth =new ArrayList<>();
     private String startDate;
     private String startTime;
     private String endDate;
     private String endTime;
     private float hours;
     private String reason;
-    private float salary;
+
+    public LeaveApply() {
+    }
+
+    public LeaveApply(String leave, String userEmail, List<Integer> dayOfMouth, float hours) {
+        this.leave = leave;
+        this.userEmail = userEmail;
+        this.dayOfMouth = dayOfMouth;
+        this.hours = hours;
+    }
+
+    public LeaveApply(String leave, String userEmail, String startDate, String startTime, String endDate, String endTime, float hours, String reason, float salary) {
+        this.leave = leave;
+        this.userEmail = userEmail;
+        this.startDate = startDate;
+        this.startTime = startTime;
+        this.endDate = endDate;
+        this.endTime = endTime;
+        this.hours = hours;
+        this.reason = reason;
+    }
+
+    public List<Integer> getDayOfMouth() {
+        return dayOfMouth;
+    }
+
+    public void setDayOfMouth(List<Integer> dayOfMouth) {
+        this.dayOfMouth = dayOfMouth;
+    }
 
     public String getUserEmail() {
         return userEmail;
@@ -22,7 +50,7 @@ public class LeaveApply {
 
     public void setUserEmail(String userEmail) {
 
-        this.userEmail = UserEmail;
+        this.userEmail = userEmail;
     }
 
     public String getLeave() {
@@ -81,13 +109,7 @@ public class LeaveApply {
         this.reason = reason;
     }
 
-    public float getSalary() {
-        return salary;
-    }
 
-    public void setSalary(float salary) {
-        this.salary = salary;
-    }
 
 
 

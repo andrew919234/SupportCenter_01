@@ -7,6 +7,17 @@
     tools:context=".DayoffActivity">
 
 
+    <TextView
+        android:id="@+id/tv_days"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="可劃假天數"
+        android:layout_margin="10dp"
+        android:textSize="20sp"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
     <com.applandeo.materialcalendarview.CalendarView
         android:id="@+id/calendarView"
         android:layout_width="0dp"
@@ -16,17 +27,17 @@
         app:headerColor="@color/green_700"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_days"
         app:selectionColor="@color/green_500"
         app:selectionLabelColor="@color/green_200"
         app:todayLabelColor="#FF9800"
         app:type="many_days_picker" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp"
+        android:layout_margin="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calendarView">

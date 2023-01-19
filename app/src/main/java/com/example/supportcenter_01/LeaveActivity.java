@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.supportcenter_01.RoomDataBase.Leave;
 import com.example.supportcenter_01.databinding.ActivityLeaveBinding;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 public class LeaveActivity extends AppCompatActivity {
     private ActivityLeaveBinding binding;
     private DatabaseReference db_UserRef;
+    private FirebaseAuth auth;
     Leave leave = new Leave(1, 4);
 
     @Override
@@ -49,10 +51,12 @@ public class LeaveActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
 
+        auth = FirebaseAuth.getInstance();
+        db_UserRef = FirebaseDatabase.getInstance().getReference("leaveApply");
+
         ActionBar bar = getSupportActionBar();
         bar.hide();
-        int[] icon = {R.drawable.baseline_work_outline_24,
-                R.drawable.baseline_flight_takeoff_24,
+        int[] icon = {R.drawable.baseline_flight_takeoff_24,
                 R.drawable.favorite_48,
                 R.drawable.elderly_48,
                 R.drawable.personal_injury_48,

@@ -7,14 +7,14 @@ import org.joda.time.PeriodType;
 //@Entity(tableName = "leave_table")
 public class Leave {
     //    @PrimaryKey(autoGenerate = true)
-    private int id;
+    private String id;
     private float staffTenure;//員工年資
     private int vacationDay;//劃假天數
     private String onBoardTime;
-    public final String[] reason = {"劃假", "特休", "婚假", "喪假", "病假", "公傷病假", "事假", "公假", "生理假", "產假", "產檢假", "陪產檢及陪產假", "安胎假", "育兒留職停薪", "家庭照顧假"};
-    public int[] remainingAmount = {0, 0, 8, -1, 30, -1, 14, -1, 3, 56, 7, 7, 30, 365 * 2, 7};//可請假天數
-    public final float[] salary = {1, 1, 1, 1, 0.5f, 1, 0, 1, 0.5f, 0.5f, 1, 1, staffTenure > 0.5f ? 1 : 0.5f, 0, 0};//是否給薪
-    public final boolean[] sex = {true, true, true, true, true, true, true, true, false, false, false, true, false, true, true};
+    public final String[] reason = { "特休", "婚假", "喪假", "病假", "公傷病假", "事假", "公假", "生理假", "產假", "產檢假", "陪產檢及陪產假", "安胎假", "育兒留職停薪", "家庭照顧假"};
+    public int[] remainingAmount = { 0, 8, -1, 30, -1, 14, -1, 3, 56, 7, 7, 30, 365 * 2, 7};//可請假天數
+    public final float[] salary = { 1, 1, 1, 0.5f, 1, 0, 1, 0.5f, 0.5f, 1, 1, staffTenure > 0.5f ? 1 : 0.5f, 0, 0};//是否給薪
+    public final boolean[] sex = {true, true, true, true, true, true, true, false, false, false, true, false, true, true};
 
     public Leave(String gender, String onBoardTime) {
         boolean man = true;
