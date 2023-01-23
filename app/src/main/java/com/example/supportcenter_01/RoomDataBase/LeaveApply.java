@@ -18,6 +18,14 @@ public class LeaveApply {
     public LeaveApply() {
     }
 
+    public LeaveApply(String leave, String userEmail, String startDate, String endDate, String reason) {
+        this.leave = leave;
+        this.userEmail = userEmail;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.reason = reason;
+    }
+
     public LeaveApply(String leave, String userEmail, List<Integer> dayOfMouth, float hours) {
         this.leave = leave;
         this.userEmail = userEmail;

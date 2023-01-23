@@ -6,4 +6,123 @@
     android:layout_height="match_parent"
     tools:context=".ClockInActivity">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="補打卡申請"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/con_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/lobby_itembk"
+        android:elevation="@dimen/cardview_default_elevation"
+        android:orientation="vertical"
+        android:padding="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView">
+
+
+        <TextView
+            android:id="@+id/remainingAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="可用天數"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/bt_choose_date"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="選擇"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:layout_editor_absoluteY="29dp" />
+
+
+        <TextView
+            android:id="@+id/et_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="日期"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/bt_choose_date"
+            app:layout_constraintEnd_toStartOf="@+id/bt_choose_time"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/bt_choose_date" />
+
+
+        <Button
+            android:id="@+id/bt_choose_time"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="選擇"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:layout_editor_absoluteY="75dp" />
+
+        <TextView
+            android:id="@+id/et_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="時間"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/bt_choose_time"
+            app:layout_constraintEnd_toStartOf="@+id/bt_choose_time"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/bt_choose_time" />
+
+        <Spinner
+            android:id="@+id/sp_reason"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:entries="@array/option_clock_reason"
+            app:layout_constraintTop_toBottomOf="@id/bt_choose_time"
+            tools:layout_editor_absoluteX="15dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/reason_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:hint="備註"
+            app:counterEnabled="true"
+            app:counterMaxLength="60"
+            app:errorEnabled="true"
+            app:layout_constraintBottom_toTopOf="@+id/bt_apply"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sp_reason">
+
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:id="@+id/et_reason"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="top"
+                android:maxLines="6" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/bt_apply"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/green_500"
+            android:text="確認"
+            android:textAllCaps="false"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,4 +27,10 @@
         <item>男</item>
         <item>女</item>
     </array>
+    <array name="option_clock_reason">
+        <item>公務</item>
+        <item>忘記打卡</item>
+        <item>早退</item>
+        <item>其他</item>
+    </array>
 </resources>

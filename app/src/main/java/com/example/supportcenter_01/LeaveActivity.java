@@ -18,10 +18,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.supportcenter_01.RoomDataBase.Leave;
+import com.example.supportcenter_01.RoomDataBase.LeaveApply;
 import com.example.supportcenter_01.databinding.ActivityLeaveBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +38,11 @@ import java.util.stream.Collectors;
 public class LeaveActivity extends AppCompatActivity {
     private ActivityLeaveBinding binding;
     private DatabaseReference db_UserRef;
+    private int editYear;
+    private int editmouth;
+    int mYear;
+    int mMonth;
+    int mDay;
     private FirebaseAuth auth;
     Leave leave = new Leave(1, 4);
 
@@ -71,18 +81,18 @@ public class LeaveActivity extends AppCompatActivity {
         binding.optionRv.setAdapter(adapterF);
 
         binding.btChooseTime.setOnClickListener(v -> {
-            int mYear = 0;
-            int mMonth = 0;
-            int mDay = 0;
+            mYear = 0;
+            mMonth = 0;
+            mDay = 0;
 
-            if (binding.etTime.getText().toString().equals("休假時間")) {
+            if (binding.tvTime.getText().toString().equals("休假時間")) {
                 Calendar mCalendar = Calendar.getInstance();
                 mYear = mCalendar.get(Calendar.YEAR);
                 mMonth = mCalendar.get(Calendar.MONTH);
                 mDay = mCalendar.get(Calendar.DAY_OF_MONTH);
 
             } else {
-                String insertDate = binding.etTime.getText().toString();
+                String insertDate = binding.tvTime.getText().toString();
                 List<String> dataStr = Arrays.stream(insertDate.split("\n")).collect(Collectors.toList());
 
                 mYear = Integer.parseInt(dataStr.get(0).substring(0, 4));
@@ -97,131 +107,119 @@ public class LeaveActivity extends AppCompatActivity {
         });
 
         binding.btApply.setOnClickListener(v -> {
-            db_UserRef = FirebaseDatabase.getInstance().getReference("users");
-//            Query query = db_UserRef.orderByChild("email").equalTo(email);//比對資料
-//            if (!TextUtils.isEmpty(name)) {
-//                query.addListenerForSingleValueEvent(new ValueEventListener() {//若有相同資料，會啟動query
+            String userEmail = auth.getCurrentUser().getEmail();
+            db_UserRef = FirebaseDatabase.getInstance().getReference("leaveApply");
+            Query query = db_UserRef.child(String.valueOf(mYear)).child(String.valueOf(mMonth));
+            query.addListenerForSingleValueEvent(new ValueEventListener() {//若有相同資料，會啟動query
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                        User user = new User();//區域變數
-//                        ArrayList<User> tmp_array = new ArrayList<>();
-//                        if (snapshot.exists()) {
-//                            for (DataSnapshot ds : snapshot.getChildren()) {//取得底下資料
-//                                user = ds.getValue(User.class);
-//                                tmp_array.add(user);
-//                            }
-//                        }
-//                        boolean dataApear = false;
-//                        for (User e : tmp_array) {
-//                            if (e.email.equals(email)) {
-//                                dataApear = true;
-//                                Toast.makeText(StaffCRUD.this, "資料已存在", Toast.LENGTH_SHORT).show();
-//                            }
-//
-//                        }
-//                        if (!dataApear) {
-//                            String id = db_UserRef.push().getKey();
-//                            User newUser = new User(id, email, GUInumber, name, sex, birthday, onBoardTime);
-//                            db_UserRef.child(id).setValue(newUser);//放入java物件
-//                            reAdapter();
-//                            Toast.makeText(StaffCRUD.this, "user name :" + name + "新增成功", Toast.LENGTH_SHORT).show();
-//                            addUserAcount(email, GUInumber);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//                    }
-//                });
-//            } else {
-//                Toast.makeText(this, "請輸入名字", Toast.LENGTH_SHORT).show();
-//            }
-//        }
+                    if (!binding.tvLeave.getText().toString().equals("休假假別")) {
+                        LeaveApply leaveApply = new LeaveApply(binding.tvLeave.getText().toString()
+                                , userEmail
+                                , String.valueOf(mDay)
+                                , String.valueOf(mDay)
+                                , binding.etReason.getText().toString().trim());
+                        String id = db_UserRef.child(String.valueOf(mYear)).child(String.valueOf(mMonth)).child("apply").push().getKey();
+                        db_UserRef.child(String.valueOf(mYear)).child(String.valueOf(mMonth)).child("apply").child(id).setValue(leaveApply);
+                        binding.remainingAmount.setText("");
+                        binding.tvTime.setText("休假時間");
+                        binding.tvLeave.setText("休假假別");
+                        binding.etReason.setText("");
+                        Toast.makeText(LeaveActivity.this, "已完成申請", Toast.LENGTH_SHORT).show();
+                    } else {
 
-
-    });
-}
-
-class MyDatePicker implements DatePickerDialog.OnDateSetListener {
-
-    @Override
-    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-
-        Toast.makeText(LeaveActivity.this,
-                year + "年" + (month + 1) + "月" + dayOfMonth + "日",
-                Toast.LENGTH_SHORT).show();
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, dayOfMonth);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd EEEE");
-        String show = sdf.format(calendar.getTime());
-
-        binding.etTime.setText(show);
-
-    }
-}
-
-public class MyLeaveAdapter extends RecyclerView.Adapter<MyLeaveAdapter.MyLeaveViewHolder> {
-    int[] optionIcon;
-    String[] optionString;
-
-
-    public MyLeaveAdapter(int[] optionIcon, String[] optionString) {
-        this.optionIcon = optionIcon;
-        this.optionString = optionString;
-    }
-
-    public class MyLeaveViewHolder extends RecyclerView.ViewHolder {
-        public View itemview;
-        public Button optionButton;
-
-
-        public MyLeaveViewHolder(@NonNull View itemView) {
-            super(itemView);
-            this.itemview = itemView;
-            optionButton = itemView.findViewById(R.id.leave_bt);
-            optionButton.setOnClickListener(v -> {
-                TextView leaveText = itemView.getRootView().findViewById(R.id.lobby_leave);
-                TextView remainingAmount = itemView.getRootView().findViewById(R.id.remainingAmount);
-
-                String leaveSelected = optionButton.getText().toString().trim();
-                for (int i = 0; i < leave.reason.length; i++) {
-                    if (leave.reason[i].equals(leaveSelected)) {
-                        leaveText.setText(leave.reason[i]);
-                        if (leave.remainingAmount[i] < 0)
-                            remainingAmount.setText("");
-                        else
-                            remainingAmount.setText("可用天數：" + leave.remainingAmount[i] + " 天");
                     }
                 }
 
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
             });
+        });
+    }
+
+    class MyDatePicker implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
+            Toast.makeText(LeaveActivity.this,
+                    year + "年" + (month + 1) + "月" + dayOfMonth + "日",
+                    Toast.LENGTH_SHORT).show();
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(year, month, dayOfMonth);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd EEEE");
+            String show = sdf.format(calendar.getTime());
+
+            binding.tvTime.setText(show);
 
         }
     }
 
-    @NonNull
-    @Override
-    public MyLeaveViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        MyLeaveViewHolder vh = new MyLeaveViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.leave_item, parent, false));
-        return vh;
-    }
+    public class MyLeaveAdapter extends RecyclerView.Adapter<MyLeaveAdapter.MyLeaveViewHolder> {
+        int[] optionIcon;
+        String[] optionString;
 
-    @Override
-    public void onBindViewHolder(@NonNull MyLeaveViewHolder holder, int position) {
-        int icon = optionIcon[position];
-        String string = optionString[position];
-        holder.optionButton.setCompoundDrawablesWithIntrinsicBounds(0, icon, 0, 0);
-        holder.optionButton.setText(string);
 
-    }
+        public MyLeaveAdapter(int[] optionIcon, String[] optionString) {
+            this.optionIcon = optionIcon;
+            this.optionString = optionString;
+        }
 
-    @Override
-    public int getItemCount() {
-        return optionIcon.length;
+        public class MyLeaveViewHolder extends RecyclerView.ViewHolder {
+            public View itemview;
+            public Button optionButton;
+
+
+            public MyLeaveViewHolder(@NonNull View itemView) {
+                super(itemView);
+                this.itemview = itemView;
+                optionButton = itemView.findViewById(R.id.leave_bt);
+                optionButton.setOnClickListener(v -> {
+                    TextView leaveText = itemView.getRootView().findViewById(R.id.tv_leave);
+                    TextView remainingAmount = itemView.getRootView().findViewById(R.id.remainingAmount);
+
+                    String leaveSelected = optionButton.getText().toString().trim();
+                    for (int i = 0; i < leave.reason.length; i++) {
+                        if (leave.reason[i].equals(leaveSelected)) {
+                            leaveText.setText(leave.reason[i]);
+                            if (leave.remainingAmount[i] < 0)
+                                remainingAmount.setText("");
+                            else
+                                remainingAmount.setText("可用天數：" + leave.remainingAmount[i] + " 天");
+                        }
+                    }
+
+                });
+
+            }
+        }
+
+        @NonNull
+        @Override
+        public MyLeaveViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            MyLeaveViewHolder vh = new MyLeaveViewHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.leave_item, parent, false));
+            return vh;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull MyLeaveViewHolder holder, int position) {
+            int icon = optionIcon[position];
+            String string = optionString[position];
+            holder.optionButton.setCompoundDrawablesWithIntrinsicBounds(0, icon, 0, 0);
+            holder.optionButton.setText(string);
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return optionIcon.length;
+        }
     }
-}
 
 }
