@@ -16,11 +16,10 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <array name="option_string">
-        <item>外出申請</item>
+        <item>補打卡申請</item>
         <item>休假申請</item>
         <item>劃假</item>
-        <item>重要日期</item>
-        <item>班別</item>
+        <item>班表確認</item>
         <item>申請紀錄</item>
     </array>
 

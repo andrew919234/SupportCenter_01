@@ -58,6 +58,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             holder.optionButton.setOnClickListener(v -> {
                 holder.itemView.getContext().startActivity(new Intent(holder.itemView.getContext(), DayoffActivity.class));
             });
+        }else if (string.equals("班表確認")) {
+            holder.optionButton.setOnClickListener(v -> {
+                holder.itemView.getContext().startActivity(new Intent(holder.itemView.getContext(), ScheduleActivity.class));
+            });
+        }else if(string.equals("補打卡申請")){
+            holder.optionButton.setOnClickListener(v -> {
+                holder.itemView.getContext().startActivity(new Intent(holder.itemView.getContext(), ClockInActivity.class));
+            });
         }
     }
 

@@ -21,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -31,27 +33,78 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.example.supportcenter_01.RoomDataBase.Shift;
 import com.example.supportcenter_01.databinding.ActivityLobbyBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class Lobby extends AppCompatActivity {
 
-    private AppBarConfiguration appBarConfiguration;
     private ActivityLobbyBinding binding;
+    private DatabaseReference db_UserRef;
+    private FirebaseAuth auth;
     private MyViewModel myViewModel;
+    private String name;
+    private String startWork;
+    private String endWork;
     private double loacalLatitude;
     private double loacalLongitude;
-    private double latitude = 25.00536;
-    private double longitude = 121.54166;
+    private List<String> staffWork = new ArrayList<>();
+    private double latitude = 25.00548;
+    private double longitude = 121.54188;
+    private Shift[] shifts = {new Shift("A", 8, "09:00", "17:00"), new Shift("B", 8, "13:00", "21:00"),
+            new Shift("C", 8, "17:00", "01:00"), new Shift("休", 0, "09:00", "17:00"),
+            new Shift("例", 0, "09:00", "17:00"), new Shift("未定", 0, "09:00", "17:00")};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityLobbyBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+
+        getGreet();
+
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int mouth = calendar.get(Calendar.MONTH);
+        auth = FirebaseAuth.getInstance();
+        db_UserRef = FirebaseDatabase.getInstance().getReference("leaveApply");
+        Query query = db_UserRef.child(String.valueOf(year)).child(String.valueOf(mouth+1+1)).child("schedule").child(name);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    String value = ds.getValue(String.class);
+                    staffWork.add(value);
+
+                }
+                    setWorkTime();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
 
         binding.lobbyClockInOut.setOnClickListener(v -> {
             if (haveInternet()) {
@@ -60,19 +113,70 @@ public class Lobby extends AppCompatActivity {
                         Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.ACCESS_FINE_LOCATION
                 }, 100);
-//                    getLocal();
+                    sendClickInOut();
             } else {
                 Toast.makeText(this, "無法取得位址", Toast.LENGTH_SHORT).show();
             }
         });
+        Resources res = getResources();
+        int[] icon = {R.drawable.baseline_work_outline_24,
+                R.drawable.baseline_flight_takeoff_24,
+                R.drawable.baseline_calendar_month_24,
+                R.drawable.baseline_work_24,
+                R.drawable.baseline_fact_check_24};
+        String[] strings = res.getStringArray(R.array.option_string);
 
-        setSupportActionBar(binding.toolbar);
 
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        binding.lobbyRvbt.setLayoutManager(new GridLayoutManager(this, 2));
+        MyAdapter adapterF = new MyAdapter(icon, strings);
+        binding.lobbyRvbt.setAdapter(adapterF);
+    }
+
+    private void setWorkTime() {
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        for (int i = 0; i < shifts.length-3; i++) {
+        if(staffWork.get(day-1).equals(shifts[i].getShiftName())){
+            binding.lobbyTvWorktime.setText("上班時間："+shifts[i].getStartTime()+"下班時間："+shifts[i].getEndTime());
+        startWork = shifts[i].getStartTime();
+        endWork = shifts[i].getEndTime();
+        }
+
+        }
+    }
+
+    private void getGreet() {
+        auth = FirebaseAuth.getInstance();
+        name = auth.getCurrentUser().getEmail();
+        int index = name.indexOf("@");
+        name = name.substring(0, index);
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        if (hour >= 4 && hour < 10) {
+            binding.lobbyGreet.setText(name+" 早安");
+        } else if (hour >= 10 && hour < 18) {
+
+            binding.lobbyGreet.setText(name+" 午安");
+        } else {
+            binding.lobbyGreet.setText(name+" 晚安");
+
+        }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, 0, 0, "登出").setIcon(android.R.drawable.ic_menu_set_as).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case 0:
+                
                 BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(binding.getRoot().getContext());//初始化BottomSheet
-                view = LayoutInflater.from(Lobby.this).inflate(R.layout.bottom_sheet_logout, null);//連結的介面
+                View view = LayoutInflater.from(Lobby.this).inflate(R.layout.bottom_sheet_logout, null);//連結的介面
                 Button btCancel = view.findViewById(R.id.button_cancel);
                 Button bt01 = view.findViewById(R.id.button_sheet_out);
                 bottomSheetDialog.setContentView(view);//將介面載入至BottomSheet内
@@ -80,31 +184,19 @@ public class Lobby extends AppCompatActivity {
                 parent.setBackgroundResource(android.R.color.transparent);//將背景設為透明,否則預設白底
                 bt01.setOnClickListener((v) -> {
                     bottomSheetDialog.dismiss();
-                myViewModel.signOutUserOnline();
+                    myViewModel.signOutUserOnline();
                     finish();
                 });
                 btCancel.setOnClickListener((v) -> {
                     bottomSheetDialog.dismiss();
                 });
                 bottomSheetDialog.show();//顯示BottomSheet
-            }
-        });
-        Resources res = getResources();
-        int[] icon = {R.drawable.baseline_work_outline_24,
-                R.drawable.baseline_flight_takeoff_24,
-                R.drawable.baseline_calendar_month_24,
-                R.drawable.baseline_date_range_24,
-                R.drawable.baseline_work_24,
-                R.drawable.baseline_fact_check_24};
-        String[] strings = res.getStringArray(R.array.option_string);
-//        LinearLayoutManager llm = new LinearLayoutManager(this);
-//        llm.setOrientation(LinearLayoutManager.HORIZONTAL);z
-//        binding.lobbyRvbt.setLayoutManager(llm);
-        binding.lobbyRvbt.setLayoutManager(new GridLayoutManager(this, 2));
-        MyAdapter adapterF = new MyAdapter(icon, strings);
-        binding.lobbyRvbt.setAdapter(adapterF);
-    }
 
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
@@ -131,7 +223,6 @@ public class Lobby extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         getLocal();//自定義方法
     }
 
@@ -152,8 +243,43 @@ public class Lobby extends AppCompatActivity {
 
                     loacalLongitude = Double.parseDouble(String.format("%.5f", location.getLongitude()));
                     loacalLatitude = Double.parseDouble(String.format("%.5f", location.getLatitude()));
-                    @SuppressLint("DefaultLocale") String address = "我的位置：緯度:" + loacalLatitude +
-                            "經度:" + loacalLongitude;
+                    @SuppressLint("DefaultLocale") String address = "我的位置：\n緯度:" + loacalLatitude + "經度:" + loacalLongitude;
+                    if (latitude == loacalLatitude && longitude == loacalLongitude) {
+                        binding.lobbyTvLocation.setText("1公里內 " + address);
+                    } else {
+                        loacalLongitude = Double.parseDouble(String.format("%.4f", location.getLongitude()));
+                        loacalLatitude = Double.parseDouble(String.format("%.4f", location.getLatitude()));
+                        latitude = Double.parseDouble(String.format("%.4f", latitude));
+                        longitude = Double.parseDouble(String.format("%.4f", longitude));
+                        if (latitude == loacalLatitude && longitude == loacalLongitude) ;
+                        binding.lobbyTvLocation.setText("10公尺以內 " + address);
+                        binding.lobbyTvLocation.setText("差距10公尺以上 " + address);
+
+                    }
+                } else {
+                    binding.lobbyTvLocation.setText("無法取得位址");
+                }
+            }
+        });
+    }
+
+    private void sendClickInOut(){
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            binding.lobbyTvLocation.setText("無法取得位址權限");
+            return;
+        }
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @SuppressLint({"DefaultLocale", "SetTextI18n"})
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    showLocation(location);//自定義方法
+
+                    loacalLongitude = Double.parseDouble(String.format("%.5f", location.getLongitude()));
+                    loacalLatitude = Double.parseDouble(String.format("%.5f", location.getLatitude()));
+                    @SuppressLint("DefaultLocale") String address = "我的位置：\n緯度:" + loacalLatitude + "經度:" + loacalLongitude;
                     if (latitude == loacalLatitude && longitude == loacalLongitude) {
                         binding.lobbyTvLocation.setText("打卡成功,1公里內" + address);
                     } else {
@@ -162,30 +288,88 @@ public class Lobby extends AppCompatActivity {
                         latitude = Double.parseDouble(String.format("%.4f", latitude));
                         longitude = Double.parseDouble(String.format("%.4f", longitude));
                         if (latitude == loacalLatitude && longitude == loacalLongitude) ;
-                        binding.lobbyTvLocation.setText("10公尺以內" + address);
-                        binding.lobbyTvLocation.setText("差距10公尺以上" + address);
+                        binding.lobbyTvLocation.setText("10公尺以內 " + address);
 
+                        binding.lobbyTvLocation.setText("差距10公尺以上 " + address);
+                        send();
                     }
                 } else {
                     binding.lobbyTvLocation.setText("無法取得位址");
                 }
             }
         });
-//        Location location = fusedLocationClient.getCurrentLocation();
+    }
 
+    private void send(){
+        auth = FirebaseAuth.getInstance();
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int mouth = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        db_UserRef = FirebaseDatabase.getInstance().getReference("clockInOut");
+        Query query = db_UserRef;
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-//        String localProvider = "";
-//        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//        /**知道位置後..*/
-//        Location location = manager.getLastKnownLocation(localProvider);
-//        if (location!=null) {
-//            showLocation(location);//自定義方法
-//        } else {
-//            Log.d("Andrew", "getLocal: ");
-////            String address = "我的位置：緯度:" + String.format("%.5f",location.getLatitude()) + "經度:" + String.format("%.5f",location.getLongitude());
-//            manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, mListener);
-//            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mListener);
-//        }
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                Date startWorkDate = null;
+                try {
+                    startWorkDate = sdf.parse(startWork);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Date endWorkDate = null;
+                try {
+                    endWorkDate = sdf.parse(endWork);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                Calendar c = Calendar.getInstance();
+                Date now = c.getTime();
+                c.setTime(startWorkDate);
+                c.add(Calendar.MINUTE, -30);
+                Date beforeWork = c.getTime();
+                c.add(Calendar.MINUTE,+45);
+                Date late = c.getTime();
+
+                Calendar c2 = Calendar.getInstance();
+                c2.setTime(endWorkDate);
+                c2.add(Calendar.MINUTE,+240);
+                Date later = c2.getTime();
+
+                if(now.after(beforeWork)&&now.before(startWorkDate)) {
+                    ClockInOut clockIn = new ClockInOut();
+                    clockIn.state = "準時";
+                    clockIn.time=sdf.format(now.getTime());
+                db_UserRef.child(name).child(String.valueOf(year)).child(String.valueOf(mouth+1)).child(String.valueOf(day)).child("clockIn").setValue(clockIn);
+                }else if (now.after(startWorkDate)&& now.before(late)){
+                    ClockInOut clockIn = new ClockInOut();
+                    clockIn.state = "遲到";
+                    clockIn.time=sdf.format(now.getTime());
+                db_UserRef.child(name).child(String.valueOf(year)).child(String.valueOf(mouth+1)).child(String.valueOf(day)).child("clockIn").setValue(clockIn);
+                }else if (now.after(endWorkDate)&&now.before(later)){
+                    ClockInOut clockout = new ClockInOut();
+                    clockout.state = "下班";
+                    clockout.time=sdf.format(now.getTime());
+                db_UserRef.child(name).child(String.valueOf(year)).child(String.valueOf(mouth+1)).child(String.valueOf(day)).child("clockIn").setValue(clockout);
+                }
+                else {
+                    Toast.makeText(Lobby.this, "非打卡時間", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    class ClockInOut{
+        String state;
+        String time;
     }
 
     //監聽位置變化

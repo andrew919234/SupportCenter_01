@@ -3,6 +3,8 @@ package com.example.supportcenter_01;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -17,6 +19,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -45,14 +48,15 @@ public class DayoffActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
 
+
         Calendar editDate = Calendar.getInstance();
         editYear = editDate.get(Calendar.YEAR);
         editmouth = editDate.get(Calendar.MONTH) + 1;
-        if (editYear == 12) {
+        if (editmouth == 12) {
             editYear += 1;
             editmouth = 1;
         }
-        binding.tvDays.setText("可劃假天數：" + dayOffDays + "天");
+
         getSelectDayOffDate();
         binding.btRetry.setOnClickListener(v -> {
             List<Calendar> disabledDays = new ArrayList<>();
@@ -64,6 +68,7 @@ public class DayoffActivity extends AppCompatActivity {
         binding.btApply.setOnClickListener(v -> {
             selectedDates = binding.calendarView.getSelectedDates();
             sendLeaveApply();
+            lockCalendarView();
         });
     }
 
@@ -71,6 +76,7 @@ public class DayoffActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         checkDataBase();
+        setDayOffRules();
     }
 
     private void checkDataBase() {
@@ -143,6 +149,60 @@ public class DayoffActivity extends AppCompatActivity {
         });
     }
 
+    private void setDayOffRules() {
+        auth = FirebaseAuth.getInstance();
+        userEmail = auth.getCurrentUser().getEmail();
+        db_UserRef = FirebaseDatabase.getInstance().getReference("leaveApply");
+        Query query = db_UserRef.child(String.valueOf(editYear)).child(String.valueOf(editmouth + 1)).child("dayOffDays");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {//若有相同資料，會啟動query
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String data = snapshot.getValue(new GenericTypeIndicator<String>() {
+                    });
+                    dayOffDays = Integer.parseInt(data.trim());
+                    binding.tvDays.setText("可劃假天數：" + dayOffDays + "天");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        query = db_UserRef.child(String.valueOf(editYear)).child(String.valueOf(editmouth + 1)).child("dayOfMouth");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {//若有相同資料，會啟動query
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    selectedDates = binding.calendarView.getSelectedDates();
+
+                    ArrayList<Integer> data = snapshot.getValue(new GenericTypeIndicator<ArrayList<Integer>>() {
+                    });
+
+                    List<Calendar> selectedDays = new ArrayList<>();
+                    for (int i = 0; i < data.size(); i++) {
+                        Calendar c = Calendar.getInstance();
+                        c.set(Calendar.YEAR, editYear);
+                        c.set(Calendar.MONTH, editmouth);
+                        c.set(Calendar.DAY_OF_MONTH, data.get(i));
+                        selectedDays.add(c);
+                    }
+                    binding.calendarView.setDisabledDays(selectedDays);
+                    String days = "";
+                    for (Calendar c : selectedDays) {
+                        days += c.get(Calendar.DAY_OF_MONTH) + "/";
+                    }
+                    Toast.makeText(DayoffActivity.this, "已禁假" + days, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 
     private void getSelectDayOffDate() {
         Calendar setDate = Calendar.getInstance();
@@ -169,27 +229,29 @@ public class DayoffActivity extends AppCompatActivity {
             public void onDayClick(@NonNull EventDay eventDay) {
                 selectedDates = binding.calendarView.getSelectedDates();
                 if (selectedDates.size() > dayOffDays - 1) {
-                    Calendar date = Calendar.getInstance();
-                    int month = date.get(Calendar.MONTH);
-                    date.set(Calendar.MONTH, editmouth);
-                    int daysInMonth = date.getActualMaximum(Calendar.DAY_OF_MONTH);
-
-                    List<Calendar> disabledDays = new ArrayList<>();
-                    for (int i = 0; i < daysInMonth; i++) {
-                        Calendar dates = Calendar.getInstance();
-                        int months = date.get(Calendar.MONTH);
-                        dates.set(Calendar.YEAR, editYear);
-                        dates.set(Calendar.MONTH, editmouth);
-                        dates.set(Calendar.DAY_OF_MONTH, i + 1);
-                        disabledDays.add(dates);
-                    }
-                    binding.calendarView.setDisabledDays(disabledDays);
-
+                    lockCalendarView();
                     Toast.makeText(DayoffActivity.this, "超過天數了", Toast.LENGTH_SHORT).show();
 
                 }
             }
         });
+    }
+
+    private void lockCalendarView() {
+        Calendar date = Calendar.getInstance();
+        int month = date.get(Calendar.MONTH);
+        date.set(Calendar.MONTH, editmouth);
+        int daysInMonth = date.getActualMaximum(Calendar.DAY_OF_MONTH);
+        List<Calendar> disabledDays = new ArrayList<>();
+        for (int i = 0; i < daysInMonth; i++) {
+            Calendar dates = Calendar.getInstance();
+            int months = date.get(Calendar.MONTH);
+            dates.set(Calendar.YEAR, editYear);
+            dates.set(Calendar.MONTH, editmouth);
+            dates.set(Calendar.DAY_OF_MONTH, i + 1);
+            disabledDays.add(dates);
+        }
+        binding.calendarView.setDisabledDays(disabledDays);
     }
 
     private void sendLeaveApply() {
@@ -223,14 +285,14 @@ public class DayoffActivity extends AppCompatActivity {
                         }
 
                     }
-                        String days ="";
+                    String days = "";
                     if (!dataApear) {
                         dayOfMouth = new ArrayList<>();
                         String year = String.valueOf(selectedDates.get(0).get(Calendar.YEAR));
                         String mouth = String.valueOf(selectedDates.get(0).get(Calendar.MONTH) + 1);
                         for (int i = 0; i < selectedDates.size(); i++) {
                             int date = selectedDates.get(i).get(Calendar.DAY_OF_MONTH);
-                            days +=String.valueOf(date)+"/";
+                            days += String.valueOf(date) + "/";
                             dayOfMouth.add(date);
                         }
                         LeaveApply leaveApply = new LeaveApply(leave, userEmail, dayOfMouth, hours);
@@ -247,16 +309,16 @@ public class DayoffActivity extends AppCompatActivity {
                         String mouth = String.valueOf(selectedDates.get(0).get(Calendar.MONTH) + 1);
                         for (int i = 0; i < selectedDates.size(); i++) {
                             int date = selectedDates.get(i).get(Calendar.DAY_OF_MONTH);
-                            days +=String.valueOf(date)+"/";
+                            days += String.valueOf(date) + "/";
                             dayOfMouth.add(date);
                         }
                         HashMap<String, Object> new_data = new HashMap<>();
                         new_data.put("dayOfMouth", dayOfMouth);
-                        db_UserRef.child(String.valueOf(editYear)).child(String.valueOf(editmouth+1)).child(id).updateChildren(new_data);
+                        db_UserRef.child(String.valueOf(editYear)).child(String.valueOf(editmouth + 1)).child(id).updateChildren(new_data);
                         binding.btApply.setEnabled(false);
                         Toast.makeText(DayoffActivity.this, "已更新", Toast.LENGTH_SHORT).show();
                     }
-                        binding.tvDays.setText(days);
+                    binding.tvDays.setText(days);
                 }
 
                 @Override
