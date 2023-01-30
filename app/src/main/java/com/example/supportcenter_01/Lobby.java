@@ -33,6 +33,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.example.supportcenter_01.RoomDataBase.ClockInOut;
 import com.example.supportcenter_01.RoomDataBase.Shift;
 import com.example.supportcenter_01.databinding.ActivityLobbyBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -87,7 +88,7 @@ public class Lobby extends AppCompatActivity {
         int mouth = calendar.get(Calendar.MONTH);
         auth = FirebaseAuth.getInstance();
         db_UserRef = FirebaseDatabase.getInstance().getReference("leaveApply");
-        Query query = db_UserRef.child(String.valueOf(year)).child(String.valueOf(mouth+1+1)).child("schedule").child(name);
+        Query query = db_UserRef.child(String.valueOf(year)).child(String.valueOf(mouth + 1)).child("schedule").child(name);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -96,7 +97,7 @@ public class Lobby extends AppCompatActivity {
                     staffWork.add(value);
 
                 }
-                    setWorkTime();
+                setWorkTime();
             }
 
             @Override
@@ -113,7 +114,7 @@ public class Lobby extends AppCompatActivity {
                         Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.ACCESS_FINE_LOCATION
                 }, 100);
-                    sendClickInOut();
+                sendClickInOut();
             } else {
                 Toast.makeText(this, "無法取得位址", Toast.LENGTH_SHORT).show();
             }
@@ -135,13 +136,17 @@ public class Lobby extends AppCompatActivity {
     private void setWorkTime() {
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_MONTH);
-        for (int i = 0; i < shifts.length-3; i++) {
-        if(staffWork.get(day-1).equals(shifts[i].getShiftName())){
-            binding.lobbyTvWorktime.setText("上班時間："+shifts[i].getStartTime()+"下班時間："+shifts[i].getEndTime());
-        startWork = shifts[i].getStartTime();
-        endWork = shifts[i].getEndTime();
-        }
-
+        if (!staffWork.isEmpty()) {
+            for (int i = 0; i < shifts.length - 3; i++) {
+                if (staffWork.get(day - 1).equals(shifts[i].getShiftName())) {
+                    binding.lobbyTvWorktime.setText("上班時間：" + shifts[i].getStartTime() + "下班時間：" + shifts[i].getEndTime());
+                    binding.tvShift.setText("班別：" + shifts[i].getShiftName() + " 班");
+                    startWork = shifts[i].getStartTime();
+                    endWork = shifts[i].getEndTime();
+                }
+            }
+        } else {
+            Toast.makeText(this, "尚未有班表", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -153,12 +158,12 @@ public class Lobby extends AppCompatActivity {
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         if (hour >= 4 && hour < 10) {
-            binding.lobbyGreet.setText(name+" 早安");
+            binding.lobbyGreet.setText(name + " 早安");
         } else if (hour >= 10 && hour < 18) {
 
-            binding.lobbyGreet.setText(name+" 午安");
+            binding.lobbyGreet.setText(name + " 午安");
         } else {
-            binding.lobbyGreet.setText(name+" 晚安");
+            binding.lobbyGreet.setText(name + " 晚安");
 
         }
     }
@@ -174,7 +179,7 @@ public class Lobby extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case 0:
-                
+
                 BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(binding.getRoot().getContext());//初始化BottomSheet
                 View view = LayoutInflater.from(Lobby.this).inflate(R.layout.bottom_sheet_logout, null);//連結的介面
                 Button btCancel = view.findViewById(R.id.button_cancel);
@@ -197,6 +202,7 @@ public class Lobby extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
@@ -243,7 +249,7 @@ public class Lobby extends AppCompatActivity {
 
                     loacalLongitude = Double.parseDouble(String.format("%.5f", location.getLongitude()));
                     loacalLatitude = Double.parseDouble(String.format("%.5f", location.getLatitude()));
-                    @SuppressLint("DefaultLocale") String address = "我的位置：\n緯度:" + loacalLatitude + "經度:" + loacalLongitude;
+                    @SuppressLint("DefaultLocale") String address = "\n我的位置：緯度:" + loacalLatitude + "經度:" + loacalLongitude;
                     if (latitude == loacalLatitude && longitude == loacalLongitude) {
                         binding.lobbyTvLocation.setText("1公里內 " + address);
                     } else {
@@ -263,7 +269,7 @@ public class Lobby extends AppCompatActivity {
         });
     }
 
-    private void sendClickInOut(){
+    private void sendClickInOut() {
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             binding.lobbyTvLocation.setText("無法取得位址權限");
@@ -279,7 +285,7 @@ public class Lobby extends AppCompatActivity {
 
                     loacalLongitude = Double.parseDouble(String.format("%.5f", location.getLongitude()));
                     loacalLatitude = Double.parseDouble(String.format("%.5f", location.getLatitude()));
-                    @SuppressLint("DefaultLocale") String address = "我的位置：\n緯度:" + loacalLatitude + "經度:" + loacalLongitude;
+                    @SuppressLint("DefaultLocale") String address = "\n我的位置：緯度:" + loacalLatitude + "經度:" + loacalLongitude;
                     if (latitude == loacalLatitude && longitude == loacalLongitude) {
                         binding.lobbyTvLocation.setText("打卡成功,1公里內" + address);
                     } else {
@@ -300,77 +306,73 @@ public class Lobby extends AppCompatActivity {
         });
     }
 
-    private void send(){
-        auth = FirebaseAuth.getInstance();
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int mouth = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        db_UserRef = FirebaseDatabase.getInstance().getReference("clockInOut");
-        Query query = db_UserRef;
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+    private void send() {
+        if (!staffWork.isEmpty()) {
+            auth = FirebaseAuth.getInstance();
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int mouth = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            db_UserRef = FirebaseDatabase.getInstance().getReference("clockInOut");
+            Query query = db_UserRef;
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                Date startWorkDate = null;
-                try {
-                    startWorkDate = sdf.parse(startWork);
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                    int startHour = Integer.parseInt(startWork.substring(0, 2));
+                    int startMinute = Integer.parseInt(startWork.substring(3, 4));
+
+                    int endHour = Integer.parseInt(endWork.substring(0, 2));
+                    int endMinute = Integer.parseInt(endWork.substring(3, 4));
+
+                    Calendar c = Calendar.getInstance();
+                    Date now = c.getTime();
+                    c.set(Calendar.HOUR_OF_DAY, startHour);
+                    c.set(Calendar.MINUTE, startMinute);
+                    Date startWorkDate = c.getTime();
+                    c.add(Calendar.MINUTE, -30);
+                    Date beforeWork = c.getTime();
+                    c.add(Calendar.MINUTE, +45);
+                    Date late = c.getTime();
+
+                    Calendar c2 = Calendar.getInstance();
+                    c2.set(Calendar.HOUR_OF_DAY, endHour);
+                    c2.set(Calendar.MINUTE, endMinute);
+                    Date endWorkDate = c2.getTime();
+                    c2.add(Calendar.MINUTE, +240);
+                    Date later = c2.getTime();
+
+                    if (now.after(beforeWork) && now.before(startWorkDate)) {
+                        ClockInOut clockIn = new ClockInOut();
+                        clockIn.state = "準時";
+                        clockIn.time = sdf.format(now.getTime());
+                        db_UserRef.child(name).child(String.valueOf(year)).child(String.valueOf(mouth + 1)).child(String.valueOf(day)).child("clockIn").setValue(clockIn);
+                    } else if (now.after(startWorkDate) && now.before(late)) {
+                        ClockInOut clockIn = new ClockInOut();
+                        clockIn.state = "遲到";
+                        clockIn.time = sdf.format(now.getTime());
+                        db_UserRef.child(name).child(String.valueOf(year)).child(String.valueOf(mouth + 1)).child(String.valueOf(day)).child("clockIn").setValue(clockIn);
+                    } else if (now.after(endWorkDate) && now.before(later)) {
+                        ClockInOut clockout = new ClockInOut();
+                        clockout.state = "下班";
+                        clockout.time = sdf.format(now.getTime());
+                        db_UserRef.child(name).child(String.valueOf(year)).child(String.valueOf(mouth + 1)).child(String.valueOf(day)).child("clockOut").setValue(clockout);
+                    } else {
+                        Toast.makeText(Lobby.this, "非打卡時間", Toast.LENGTH_SHORT).show();
+                    }
                 }
-                Date endWorkDate = null;
-                try {
-                    endWorkDate = sdf.parse(endWork);
-                } catch (ParseException e) {
-                    e.printStackTrace();
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
                 }
-
-                Calendar c = Calendar.getInstance();
-                Date now = c.getTime();
-                c.setTime(startWorkDate);
-                c.add(Calendar.MINUTE, -30);
-                Date beforeWork = c.getTime();
-                c.add(Calendar.MINUTE,+45);
-                Date late = c.getTime();
-
-                Calendar c2 = Calendar.getInstance();
-                c2.setTime(endWorkDate);
-                c2.add(Calendar.MINUTE,+240);
-                Date later = c2.getTime();
-
-                if(now.after(beforeWork)&&now.before(startWorkDate)) {
-                    ClockInOut clockIn = new ClockInOut();
-                    clockIn.state = "準時";
-                    clockIn.time=sdf.format(now.getTime());
-                db_UserRef.child(name).child(String.valueOf(year)).child(String.valueOf(mouth+1)).child(String.valueOf(day)).child("clockIn").setValue(clockIn);
-                }else if (now.after(startWorkDate)&& now.before(late)){
-                    ClockInOut clockIn = new ClockInOut();
-                    clockIn.state = "遲到";
-                    clockIn.time=sdf.format(now.getTime());
-                db_UserRef.child(name).child(String.valueOf(year)).child(String.valueOf(mouth+1)).child(String.valueOf(day)).child("clockIn").setValue(clockIn);
-                }else if (now.after(endWorkDate)&&now.before(later)){
-                    ClockInOut clockout = new ClockInOut();
-                    clockout.state = "下班";
-                    clockout.time=sdf.format(now.getTime());
-                db_UserRef.child(name).child(String.valueOf(year)).child(String.valueOf(mouth+1)).child(String.valueOf(day)).child("clockIn").setValue(clockout);
-                }
-                else {
-                    Toast.makeText(Lobby.this, "非打卡時間", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+            });
+        } else {
+            Toast.makeText(this, "尚未有班表", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    class ClockInOut{
-        String state;
-        String time;
-    }
 
     //監聽位置變化
     LocationListener mListener = new LocationListener() {
@@ -396,12 +398,6 @@ public class Lobby extends AppCompatActivity {
         @SuppressLint("DefaultLocale") String address = "我的位置：緯度:" + String.format("%.5f", location.getLatitude()) +
                 "經度:" + String.format("%.5f", location.getLongitude());
         binding.lobbyTvLocation.setText(address);
-//        binding.lobbyClockInOut.setOnClickListener(view -> {
-//            String url = "https://www.google.com/maps/@" + location.getLatitude() + "," + location.getLongitude() + ",15z";
-//            Intent i = new Intent(Intent.ACTION_VIEW);
-//            i.setData(Uri.parse(url));
-//            startActivity(i);
-//        });
 
     }
 

@@ -46,11 +46,11 @@ public class ScheduleActivity extends AppCompatActivity {
 
         Calendar editDate = Calendar.getInstance();
         editYear = editDate.get(Calendar.YEAR);
-        editmouth = editDate.get(Calendar.MONTH) + 1;
-        if (editmouth == 12) {
-            editYear += 1;
-            editmouth = 1;
-        }
+        editmouth = editDate.get(Calendar.MONTH);
+//        if (editmouth == 12) {
+//            editYear += 1;
+//            editmouth = 1;
+//        }
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, 2023);
         cal.set(Calendar.MONTH, editmouth);   // 設定月份 (0-11)

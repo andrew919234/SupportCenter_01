@@ -107,37 +107,47 @@ public class LeaveActivity extends AppCompatActivity {
         });
 
         binding.btApply.setOnClickListener(v -> {
-            String userEmail = auth.getCurrentUser().getEmail();
-            db_UserRef = FirebaseDatabase.getInstance().getReference("leaveApply");
-            Query query = db_UserRef.child(String.valueOf(mYear)).child(String.valueOf(mMonth));
-            query.addListenerForSingleValueEvent(new ValueEventListener() {//若有相同資料，會啟動query
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
+            if (!binding.tvTime.getText().toString().equals("休假假別") && !binding.tvTime.getText().toString().equals("休假時間")) {
+                String userEmail = auth.getCurrentUser().getEmail();
+                db_UserRef = FirebaseDatabase.getInstance().getReference("leaveApply");
+                String insertDate = binding.tvTime.getText().toString();
+                List<String> dataStr = Arrays.stream(insertDate.split("\n")).collect(Collectors.toList());
+                mYear = Integer.parseInt(dataStr.get(0).substring(0, 4));
+                mMonth = Integer.parseInt(dataStr.get(0).substring(5, 7));
+                mDay = Integer.parseInt(dataStr.get(0).substring(8, 10));
+                Query query = db_UserRef.child(String.valueOf(mYear)).child(String.valueOf(mMonth));
+                query.addListenerForSingleValueEvent(new ValueEventListener() {//若有相同資料，會啟動query
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    if (!binding.tvLeave.getText().toString().equals("休假假別")) {
-                        LeaveApply leaveApply = new LeaveApply(binding.tvLeave.getText().toString()
-                                , userEmail
-                                , String.valueOf(mDay)
-                                , String.valueOf(mDay)
-                                , binding.etReason.getText().toString().trim());
-                        String id = db_UserRef.child(String.valueOf(mYear)).child(String.valueOf(mMonth)).child("apply").push().getKey();
-                        db_UserRef.child(String.valueOf(mYear)).child(String.valueOf(mMonth)).child("apply").child(id).setValue(leaveApply);
-                        binding.remainingAmount.setText("");
-                        binding.tvTime.setText("休假時間");
-                        binding.tvLeave.setText("休假假別");
-                        binding.etReason.setText("");
-                        Toast.makeText(LeaveActivity.this, "已完成申請", Toast.LENGTH_SHORT).show();
-                    } else {
+                        if (!binding.tvLeave.getText().toString().equals("休假假別")) {
+                            LeaveApply leaveApply = new LeaveApply(binding.tvLeave.getText().toString()
+                                    , userEmail
+                                    , insertDate
+                                    , insertDate
+                                    , binding.etReason.getText().toString());
+                            db_UserRef = FirebaseDatabase.getInstance().getReference("apply");
+                            String id = db_UserRef.child("leave").push().getKey();
+                            db_UserRef.child("leave").child(id).setValue(leaveApply);
+//                            String id = db_UserRef.child(String.valueOf(mYear)).child(String.valueOf(mMonth)).child("apply").push().getKey();
+//                            db_UserRef.child(String.valueOf(mYear)).child(String.valueOf(mMonth)).child("apply").child(id).setValue(leaveApply);
+                            binding.remainingAmount.setText("");
+                            binding.tvTime.setText("休假時間");
+                            binding.tvLeave.setText("休假假別");
+                            binding.etReason.setText("");
+                            Toast.makeText(LeaveActivity.this, "已完成申請", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
                     }
-                }
-
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
+                });
+            } else {
+                Toast.makeText(this, "請選擇假別和日期", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -146,9 +156,9 @@ public class LeaveActivity extends AppCompatActivity {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
-            Toast.makeText(LeaveActivity.this,
-                    year + "年" + (month + 1) + "月" + dayOfMonth + "日",
-                    Toast.LENGTH_SHORT).show();
+//            Toast.makeText(LeaveActivity.this,
+//                    year + "年" + (month + 1) + "月" + dayOfMonth + "日",
+//                    Toast.LENGTH_SHORT).show();
 
             Calendar calendar = Calendar.getInstance();
             calendar.set(year, month, dayOfMonth);

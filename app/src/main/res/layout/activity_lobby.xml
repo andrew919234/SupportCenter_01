@@ -19,7 +19,7 @@
 
             <TextView
                 android:id="@+id/lobby_greet"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="早安！"
@@ -40,7 +40,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
-                    android:format12Hour="yyyy年MM月dd日 (EEEE)"
+                    android:format24Hour="yyyy年M月dd日 E"
                     android:textSize="20sp" />
 
                 <TextClock
@@ -48,10 +48,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
-                    android:format12Hour="hh:mm:ss"
+                    android:format24Hour="HH:mm:ss"
                     android:textSize="50sp" />
 
                 <TextView
+                    android:id="@+id/tv_shift"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="工作時間：" />
@@ -78,14 +79,6 @@
                     android:text="位址" />
             </LinearLayout>
 
-<!--            <androidx.recyclerview.widget.RecyclerView-->
-<!--                android:id="@+id/lobby_post"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_margin="5dp"-->
-<!--                tools:listitem="@layout/post_item">-->
-
-<!--            </androidx.recyclerview.widget.RecyclerView>-->
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/lobby_rvbt"

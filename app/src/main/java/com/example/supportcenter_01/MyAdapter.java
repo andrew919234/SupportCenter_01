@@ -66,6 +66,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             holder.optionButton.setOnClickListener(v -> {
                 holder.itemView.getContext().startActivity(new Intent(holder.itemView.getContext(), ClockInActivity.class));
             });
+        }else if(string.equals("申請記錄")){
+            holder.optionButton.setOnClickListener(v -> {
+                holder.itemView.getContext().startActivity(new Intent(holder.itemView.getContext(), ApplicationsRecordActivity.class));
+            });
         }
     }
 
