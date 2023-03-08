@@ -20,7 +20,7 @@
 <img src="https://user-images.githubusercontent.com/121853769/223675274-3400b9e4-6379-4b00-b511-a7b53d472ace.gif" width=20% height=20%>&emsp;<img src="https://user-images.githubusercontent.com/121853769/223675272-86e3251b-4a45-4362-92f7-19374516beee.gif" width=20% height=20%>
 
 <h3>functional graph</h3>
-<img src="https://user-images.githubusercontent.com/121853769/223656059-0ea07176-b4bf-4ce0-8299-2063c08e99ba.jpg" width=50% height=50%>
+<img src="https://user-images.githubusercontent.com/121853769/223760971-e37cdcba-0ccf-4b68-8a55-316bc553ce45.jpg" width=50% height=50%>
 
 Android<br>
 Emulator：Pixel 4 API 30<br>
